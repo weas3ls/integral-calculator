@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<div class="row">
+		<h5>Steps</h5>
+	</div>
+	<ol>
+		<li>Enter your equation</li>
+		<li>Enter limits, if applicable</li>
+		<li>Press the button</li>
+	</ol>
+	<div class="row">
+		<h5>Guidelines</h5>
+	</div>
+		<ul>
+			<li>Use "*" between variables and constants (ex: 2*x)</li>
+			<li>Use "sqrt()" for square root (ex: sqrt(x))</li>
+			<li>Use "log()" for logarithmic functions (ex: log(x))</li>
+			<li>Logarithmic equations will evaluate as natural log (ex: ln(x))</li>
+			<li>Use "^" for exponents (ex: x^2)</li>
+			<li>Use "()" for trigonometric functions (ex: cos(x))</li>
+			<li>Remember to add "+ C" for all indefinite integrals</li>
+			<li>You can, and must, combine where necessary (ex: sqrt(2*x))</li>
+		</ul>
+	<div class="row">
+		<div class="md-form col-md-8 offset-md-2 input-group">
+			<span class="input-group-addon" id="integral-addon">&int;</span>
+			<input type="text" id="math-input" class="form-control" placeholder="Enter Equation">
+			<span class="input-group-addon" id="dx-addon">dx</span>
+		</div>
+	</div>
+	<div class="row">
+		<div class="md-form col-md-2 offset-md-2">
+			<input type="text" id="lower-limit" class="form-control" placeholder="Lower Limit">
+		</div>
+		<div class="md-form col-md-2">
+			<input type="text" id="upper-limit" class="form-control" placeholder="Upper Limit">
+		</div>
+		<div class="col float-right">
+			<button type="button" class="btn btn-primary float-right" id="send-math" onclick="calculate()">Calculate</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="jumbotron col-md-12 text-center" id="math-output">
+		</div>
+	</div>
+{% endblock content %}
+
+{% block javascript %}
+	<script type="text/javascript">
+		function calculate() {
+			var input = document.getElementById("math-input").value;
+			var min = document.getElementById("lower-limit").value;
+			var max = document.getElementById("upper-limit").value;
+			$.ajax({
+				type: "POST",
+				url: "{% url 'integrate' %}",
+				data: {
+					'csrfmiddlewaretoken': '{{ csrf_token }}',
+					'input': input,
+					'min': min,
+					'max': max
+				}
+			}).done(function (response) {
+				$("#math-output").html("");
+				for (var i = 0; i < response.length; i++) {
+					response = response.replace("**", "^");
+				}
+				for (var i = 0; i < response.length; i++) {
+					response = response.replace("*", "");
+				}
+				$("#math-output").append("`="+response+"`"+"<br>");
+				if (min && max) {
+					$("#math-output").append("`="+math.eval(response)+"`");
+				}
+				MathJax.Hub.Queue(["Typeset",MathJax.Hub, "math-output"]);
+			});
+		}
+	</script>
+{% endblock javascript %}

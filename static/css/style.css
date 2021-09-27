@@ -1,0 +1,31 @@
+/* YOUR CUSTOM STYLES */
+
+body {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+}
+
+main {
+	flex: 1 0 auto;
+}
+
+.row {
+	margin-bottom: 20px;
+}
+
+nav {
+	margin-bottom: 20px;
+}
+
+.navbar {
+	font-family: 'Droid Serif', serif;
+}
+
+.input-group-addon {
+	font-size: 1.8rem;
+}
+
+.page-footer {
+	padding: 10px;
+}
